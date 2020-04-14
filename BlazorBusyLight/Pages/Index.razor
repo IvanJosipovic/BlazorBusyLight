@@ -1,14 +1,57 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<h1>Blazor Busy Light</h1>
 
-Welcome to your new app.
+Activity:@activity
+<br />
+Availability:@availability
 
-<AuthorizeView>
-    <Authorized>
-        @context.User.Identity.Name        
-    </Authorized>
-    <NotAuthorized>
-        <a href="authentication/login">Log in</a>
-    </NotAuthorized>
-</AuthorizeView>
+@code {
+    [Inject] private Microsoft.Extensions.Logging.ILogger<Index> logger { get; set; }
+    [Inject] private IAccessTokenProvider authService { get; set; }
+
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    private string availability;
+
+    private string activity;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var user = authState.User;
+
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            var data = await GetPresence();
+            activity = data.activity;
+            availability = data.availability;
+        }
+    }
+
+    private async Task<PresenceResponse> GetPresence()
+    {
+        var tokenResult = await authService.RequestAccessToken(
+            new AccessTokenRequestOptions
+            {
+                Scopes = new[] { "https://graph.microsoft.com/Presence.Read" }
+            }
+        );
+
+        if (tokenResult.TryGetToken(out var token))
+        {
+            logger.LogInformation("Scopes: " + token?.GrantedScopes.Length);
+            logger.LogInformation("Token: " + token?.Value);
+
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token.Value);
+
+            return await client.GetFromJsonAsync<PresenceResponse>("https://graph.microsoft.com/beta/me/presence");
+        }
+
+        throw new Exception("Unable to get Presence");
+    }
+}
