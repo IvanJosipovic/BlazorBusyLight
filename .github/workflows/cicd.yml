@@ -1,0 +1,43 @@
+name: CI/CD
+
+on: 
+  push:
+    branches: 
+      - '*'
+
+jobs:
+  build:
+
+    name: CI/CD    
+    runs-on: ubuntu-latest    
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.201
+
+    - name: Publish
+      working-directory: BlazorBusyLight
+      run: dotnet publish -c Release
+
+    - name: Deploy to Test
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --json -d BlazorBusyLight/bin/Release/netstandard2.1/publish/publish/wwwroo
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+    - name: Deploy to Production
+      if: github.ref == 'refs/heads/master'
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --prod --json -d BlazorBusyLight/bin/Release/netstandard2.1/publish/wwwroo
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
