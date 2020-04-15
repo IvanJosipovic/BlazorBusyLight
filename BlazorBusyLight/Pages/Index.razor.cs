@@ -12,39 +12,30 @@ namespace BlazorBusyLight.Pages
 {
     public partial class Index : IDisposable
     {
-        [Inject] private ILogger<Index> logger { get; set; }
+        [Inject]
+        private ILogger<Index> Logger { get; set; }
 
-        [Inject] private IAccessTokenProvider authService { get; set; }
+        [Inject]
+        private IAccessTokenProvider AuthService { get; set; }
 
-        [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
-        private Timer timer;
+        private Timer Timer;
 
-        private string color;
+        private string Color;
 
-        private string status;
+        private string Status;
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-            var user = authState.User;
-
-            if (user?.Identity?.IsAuthenticated == true)
-            {
-                SetTimer();
-            }
+            Timer?.Dispose();
+            Timer = new Timer(async _ => await Update(), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
         }
 
         public void Dispose()
         {
-            timer?.Dispose();
-        }
-
-        public void SetTimer()
-        {
-            timer?.Dispose();
-            timer = new Timer(async _ => await Update(), null, 0, 5000);
+            Timer?.Dispose();
         }
 
         private async Task Update()
@@ -53,68 +44,61 @@ namespace BlazorBusyLight.Pages
             {
                 var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-                var user = authState.User;
-
-                if (user?.Identity?.IsAuthenticated == true)
+                if (authState?.User?.Identity?.IsAuthenticated == true)
                 {
                     var data = await GetPresence();
 
                     switch (data.availability)
                     {
                         case "Available":
-                            color = "bg-success";
+                            Color = "bg-success";
                             break;
                         case "Busy":
                         case "DoNotDisturb":
-                            color = "bg-danger";
+                            Color = "bg-danger";
                             break;
                         case "BeRightBack":
-                            color = "bg-light";
+                            Color = "bg-light";
                             break;
                         case "Away":
-                            color = "bg-dark text-light";
+                            Color = "bg-dark text-light";
                             break;
                         case "Offline":
-                            color = "bg-dark text-light";
+                            Color = "bg-dark text-light";
                             break;
                         default:
-                            color = "";
+                            Color = "";
                             break;
                     }
 
-                    status = data.availability;
+                    Status = data.availability;
                     StateHasChanged();
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error getting presence");
+                Logger.LogError(ex, "Error getting presence");
             }
         }
 
         private async Task<PresenceResponse> GetPresence()
         {
-            var tokenResult = await authService.RequestAccessToken(
-                new AccessTokenRequestOptions
-                {
-                    Scopes = new[] { "https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Presence.Read" }
-                }
-            );
+            var tokenResult = await AuthService.RequestAccessToken();
 
-            if (tokenResult.TryGetToken(out var token))
+            if (tokenResult.TryGetToken(out var token) && token.Value != null)
             {
-                logger.LogInformation("Scopes: " + token?.GrantedScopes.Length);
-                logger.LogInformation("Token: " + token?.Value);
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token.Value);
 
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token.Value);
-
-                    return await client.GetFromJsonAsync<PresenceResponse>("https://graph.microsoft.com/beta/me/presence");
-                }
+                return await client.GetFromJsonAsync<PresenceResponse>("https://graph.microsoft.com/beta/me/presence");
             }
 
-            throw new Exception("Unable to get Presence");
+            throw new Exception("Unable to get the Token");
+        }
+
+        private class PresenceResponse
+        {
+            public string availability { get; set; }
         }
     }
 }

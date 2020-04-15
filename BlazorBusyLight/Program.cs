@@ -15,10 +15,13 @@ namespace BlazorBusyLight
 
             builder.Services.AddMsalAuthentication(options =>
             {
-                var authentication = options.ProviderOptions.Authentication;
-                authentication.ClientId = "a77357bb-e91e-4595-b29c-96047da062f0";
-                //options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Presence.Read");
-                //options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/User.Read");
+                options.ProviderOptions.Authentication.ClientId = "a77357bb-e91e-4595-b29c-96047da062f0";
+
+                options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/User.Read");
+                options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Presence.Read");
+
+                options.ProviderOptions.DefaultAccessTokenScopes.Add("https://graph.microsoft.com/User.Read");
+                options.ProviderOptions.DefaultAccessTokenScopes.Add("https://graph.microsoft.com/Presence.Read");
             });
 
             await builder.Build().RunAsync();
