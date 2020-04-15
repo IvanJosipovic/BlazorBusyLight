@@ -19,8 +19,9 @@ namespace BlazorBusyLight
             builder.Services.AddMsalAuthentication(options =>
             {
                 var authentication = options.ProviderOptions.Authentication;
-                authentication.Authority = "https://login.microsoftonline.com/b82075ce-f897-4df8-8624-47b71a1fd251";
-                authentication.ClientId = "522dd1fb-4748-4698-8df6-5b14119a9042";
+                authentication.Authority = "https://login.microsoftonline.com/ce6ec000-1cfa-49c2-a24f-7db63c8a9a52";
+                authentication.ClientId = "5c7e0bc4-87f3-4db5-8294-964ff1b43d8b";
+                
                 //options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Presence.Read");
                 //options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/User.Read");
             });
