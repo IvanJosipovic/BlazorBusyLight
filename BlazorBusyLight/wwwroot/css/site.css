@@ -182,6 +182,14 @@ app {
     }
 }
 
+html,
+body,
+app{
+    height: 100%;
+}
+
+
+
 .spinner {
     margin: 100px auto;
     width: 50px;

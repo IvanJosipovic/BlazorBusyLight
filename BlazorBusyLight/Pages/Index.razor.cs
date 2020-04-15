@@ -59,25 +59,28 @@ namespace BlazorBusyLight.Pages
                 {
                     var data = await GetPresence();
 
-                    //switch (data.availability)
-                    //{
-                    //    case "Available":
-                    //        color = "bg-success";
-                    //        break;
-                    //    case "Busy":
-                    //    case "DoNotDisturb":
-                    //        color = "bg-danger";
-                    //        break;
-                    //    case "BeRightBack":
-                    //        color = "bg-light";
-                    //        break;
-                    //    case "Away":
-                    //        color = "bg-dark";
-                    //        break;
-                    //    default:
-                    //        color = "";
-                    //        break;
-                    //}
+                    switch (data.availability)
+                    {
+                        case "Available":
+                            color = "bg-success";
+                            break;
+                        case "Busy":
+                        case "DoNotDisturb":
+                            color = "bg-danger";
+                            break;
+                        case "BeRightBack":
+                            color = "bg-light";
+                            break;
+                        case "Away":
+                            color = "bg-dark text-light";
+                            break;
+                        case "Offline":
+                            color = "bg-dark text-light";
+                            break;
+                        default:
+                            color = "";
+                            break;
+                    }
 
                     status = data.availability;
                     StateHasChanged();
