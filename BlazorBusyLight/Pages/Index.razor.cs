@@ -94,7 +94,7 @@ namespace BlazorBusyLight.Pages
             var tokenResult = await authService.RequestAccessToken(
                 new AccessTokenRequestOptions
                 {
-                    Scopes = new[] { "https://graph.microsoft.com/Presence.Read" }
+                    Scopes = new[] { "https://graph.microsoft.com/User.Read", "https://graph.microsoft.com/Presence.Read" }
                 }
             );
 
