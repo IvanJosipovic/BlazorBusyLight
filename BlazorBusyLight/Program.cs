@@ -20,7 +20,7 @@ namespace BlazorBusyLight
             {
                 var authentication = options.ProviderOptions.Authentication;
                 authentication.Authority = "https://login.microsoftonline.com/b82075ce-f897-4df8-8624-47b71a1fd251";
-                authentication.ClientId = "bf5f1686-0068-4b6f-a26a-84adfc49cc50";
+                authentication.ClientId = "522dd1fb-4748-4698-8df6-5b14119a9042";
                 //options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/Presence.Read");
                 //options.ProviderOptions.AdditionalScopesToConsent.Add("https://graph.microsoft.com/User.Read");
             });

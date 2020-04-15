@@ -2,9 +2,16 @@
 
 <h1>Blazor Busy Light</h1>
 
-Activity:@activity
-<br />
-Availability:@availability
+<AuthorizeView>
+    <Authorized>
+        Activity:@activity
+        <br />
+        Availability:@availability
+    </Authorized>
+    <NotAuthorized>
+        <a href="authentication/login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [Inject] private Microsoft.Extensions.Logging.ILogger<Index> logger { get; set; }
