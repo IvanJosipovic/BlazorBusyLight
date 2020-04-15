@@ -5,7 +5,7 @@
 ## What is this?
 BlazorBusyLight is a web based Microsoft Teams [Busy Light](https://busylight.com/).
 
-Simply navigate to the [website](https://blazorbusylight.netlify.com/) using an old phone or tablet and you can repuprose it as a busy light.
+Simply navigate to the [website](https://blazorbusylight.netlify.com/) using an old phone or tablet and you can repurpose it as a busy light.
 
 Hopefully this can help keep the kids out the office :)
 
